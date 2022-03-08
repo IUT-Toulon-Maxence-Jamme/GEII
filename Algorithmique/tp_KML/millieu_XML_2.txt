@@ -1,0 +1,16 @@
+<Placemark>
+<Style>
+<LineStyle>
+<color>COULEUR</color>
+<width>8</width>
+</LineStyle>
+</Style>
+<LineString>
+<extrude>1</extrude>
+<tessellate>1</tessellate>
+<altitudeMode>absolute</altitudeMode>
+<coordinates>
+COORDONEE
+</coordinates>
+</LineString>
+</Placemark>

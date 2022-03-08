@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+ <Document>
+ <name>Paths</name>
+ <description> Mon parcours </description>
+ <Style id="yellowLineGreenPoly">
+ <LineStyle>
+ <color>7f00ffff</color>
+ <width>4</width>
+ </LineStyle>
+ <PolyStyle>
+ <color>7f00ff00</color>
+ </PolyStyle>
+ </Style>
+ <Placemark>
+ <name>Absolute Extruded</name>
+ <description> </description>
+ <styleUrl>#yellowLineGreenPoly</styleUrl>
+ <LineString>
+ <extrude>1</extrude>
+ <tessellate>1</tessellate>
+ <altitudeMode>absolute</altitudeMode>
+ <coordinates> 
+ 6.175453,43.115388,3
+6.175447,43.115353,3
+6.175480,43.115350,3
+6.175508,43.115388,3
+6.175493,43.115428,3
+6.175415,43.115462,3
+6.175327,43.115482,3
+6.175203,43.115522,4 
+ </coordinates>
+ </LineString>
+ </Placemark>
+ </Document>
+</kml>
