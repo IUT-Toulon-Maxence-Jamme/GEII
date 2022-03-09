@@ -2,7 +2,7 @@
 <Style>
 <LineStyle>
 <color>COULEUR</color>
-<width>8</width>
+<width>4</width>
 </LineStyle>
 </Style>
 <LineString>

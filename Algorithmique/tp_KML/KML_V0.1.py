@@ -1,4 +1,5 @@
 import colorsys
+import math
 
 def nbLinesFile(filename):
     fichier = open(filename,'r')
@@ -64,6 +65,8 @@ def creation_fichier(nouveau_fichier_name,fichier_debut_name,data,fichier_fin_na
         millieu_text += str(data[i][1]) + "," + str(data[i][0]) + "," + str(data[i][2])+ "\n"
 
     nouveau_fichier.write(str(debut_texte)+str(millieu_text)+str(fin_texte))
+
+    
 def speedToHue( speed, speedMin=0 , speedMax=100, hueMin=140,hueMax=0):
     if speed < 0:
         speed = 0
@@ -75,7 +78,10 @@ def speedToHue( speed, speedMin=0 , speedMax=100, hueMin=140,hueMax=0):
     return hue
 
 def colorKml(hue, sat, value):
-    kmlColor = colorsys.hsv_to_rgb(hue, sat, value)
+    (r, g, b) = colorsys.hsv_to_rgb(hue, sat, value)
+    (r, g, b) = (r*255, g*255, b*255)
+    #kmlColor = "#FF" + "0x%02X" %hex(int(r)).replace("0x","") + "0x%02X" %hex(int(g)).replace("0x","") + "0x%02X" %hex(int(b)).replace("0x","")
+    kmlColor = "#FF" + ("0x%02X" % int(b))[2:] + ("0x%02X" % int(g))[2:] + ("0x%02X" % int(r))[2:]
     return kmlColor
 
 def xrange(x):
@@ -96,10 +102,21 @@ def read_data_speed(filename7,nbl):
     for i in range(nbl):
         ligne = fichier.readline()        
         ligne = ligne.split(",")
-        d = []
-        d.append(ligne[7])
-        data.append(d)
+        data.append(ligne[7])
     return data
+
+def creation_placemark(a,l,pacemarque_texte_model):
+    #millieu_texte = millieu_texte.replace("COULEUR", "INDEX1")
+    texte_placemark = pacemarque_texte_model
+    coordonne_text = ""
+    for i in range(len(l)):
+        coordonne_text += str(l[i][1][1]) + "," + str(l[i][1][0]) + "," + str(l[i][1][2])+ "\n"
+    hue = speedToHue( int(a), speedMin=0 , speedMax=100, hueMin=140,hueMax=0)
+    color = colorKml(hue/360, 1, 1)
+    texte_placemark = texte_placemark.replace("COULEUR", color)
+    texte_placemark = texte_placemark.replace("COORDONEE", coordonne_text)
+    return texte_placemark
+
 
 def creation_fichier_2(fichier_debut_name,fichier_millieu_name,fichier_fin_name,data_position,data_speed,nouveau_fichier_name,N):
     nouveau_fichier = open(nouveau_fichier_name,'w')
@@ -110,24 +127,40 @@ def creation_fichier_2(fichier_debut_name,fichier_millieu_name,fichier_fin_name,
     for i in range(nbl):
         debut_texte += str(fichier_debut.readline())
 
-    millieu_texte = ""
-    nbl = nbLinesFile(fichier_millieu_name)
-    fichier_millieu = open(fichier_millieu_name,'r')
-    for i in range(nbl):
-        millieu_texte += str(fichier_millieu.readline())
-    millieu_texte = millieu_texte.replace("COULEUR", "INDEX1")
-    millieu_texte = millieu_texte.replace("COORDONEE", "INDEX2")
-    print(millieu_texte)
     fin_texte = ""
     nbl = nbLinesFile(fichier_fin_name)
     fichier_fin = open(fichier_fin_name,'r')
     for i in range(nbl):
         fin_texte += str(fichier_fin.readline())
+
+        
+
+    pacemarque_texte_model = ""
+    nbl = nbLinesFile(fichier_millieu_name)
+    fichier_millieu = open(fichier_millieu_name,'r')
+    for i in range(nbl):
+        pacemarque_texte_model += str(fichier_millieu.readline())
+    
+    
         
     #place mark creation
     print(len(data_position), len(data_speed))
-    #for i in data_position:
+    a = 0
+    l = []
+    texte_placemark = ""
+    for i in range(len(data_speed)):
+        if abs(a-float(data_speed[i]))>10:
+            texte_placemark += creation_placemark(a,l,pacemarque_texte_model)
+            l = [] 
+            a = float(data_speed[i])
+        m = []   
+        m.append(float(data_speed[i]))
+        m.append(data_position[i])
+        l.append(m)
+    texte_placemark += creation_placemark(a,l,pacemarque_texte_model)
+    nouveau_fichier.write(str(debut_texte)+texte_placemark+str(fin_texte))
         
+        #print(i[0])
 
     #nouveau_fichier.write(str(debut_texte)+str(millieu_text)+str(fin_texte))
     
@@ -147,7 +180,7 @@ if __name__ == '__main__':
     nombre_ligne1 = nbLinesFile(filename1)
     clone_ligne(filename1,filename2,filename7,nombre_ligne1)#creation file with only good $
     
-    test = 0
+    test = 1
     if test == 0:#test code
         #nombre_ligne3 = nbLinesFile(filename3)
         #data = read_data(filename3,nombre_ligne3)
