@@ -66,12 +66,19 @@ def creation_fichier(nouveau_fichier_name,fichier_debut_name,data,fichier_fin_na
 
     nouveau_fichier.write(str(debut_texte)+str(millieu_text)+str(fin_texte))
 
-    
-def speedToHue( speed, speedMin=0 , speedMax=100, hueMin=140,hueMax=0):
-    if speed < 0:
-        speed = 0
-    elif speed > 100:
-        speed = 100
+def min_max_speed(l):
+    a,b = 200.0,-10.0
+    for i in range(len(data_speed)):
+        if float(data_speed[i]) < a :
+            a = float(data_speed[i])
+        if float(data_speed[i]) > b :
+            b = float(data_speed[i])
+    return a,b
+def speedToHue( speed, speedMin, speedMax, hueMin=140,hueMax=0):
+    if speed < speedMin:
+        speed = speedMin
+    elif speed > speedMax:
+        speed = speedMax
     m = -hueMin / speedMax
     p = hueMin
     hue = speed * m + p
@@ -111,7 +118,7 @@ def creation_placemark(a,l,pacemarque_texte_model):
     coordonne_text = ""
     for i in range(len(l)):
         coordonne_text += str(l[i][1][1]) + "," + str(l[i][1][0]) + "," + str(l[i][1][2])+ "\n"
-    hue = speedToHue( int(a), speedMin=0 , speedMax=100, hueMin=140,hueMax=0)
+    hue = speedToHue( int(a), min_speed, max_speed, hueMin=140,hueMax=0)
     color = colorKml(hue/360, 1, 1)
     texte_placemark = texte_placemark.replace("COULEUR", color)
     texte_placemark = texte_placemark.replace("COORDONEE", coordonne_text)
@@ -149,9 +156,13 @@ def creation_fichier_2(fichier_debut_name,fichier_millieu_name,fichier_fin_name,
     l = []
     texte_placemark = ""
     for i in range(len(data_speed)):
-        if abs(a-float(data_speed[i]))>10:
+        #print(i,l)
+        if abs(a-float(data_speed[i]))>N:
+            #print('oui')
             texte_placemark += creation_placemark(a,l,pacemarque_texte_model)
-            l = [] 
+            m = l[-1]
+            l = []
+            l.append(m)
             a = float(data_speed[i])
         m = []   
         m.append(float(data_speed[i]))
@@ -191,9 +202,14 @@ if __name__ == '__main__':
         #nombre_ligne8 = nbLinesFile(filename8)
         #data_speed = read_data_speed(filename8,nombre_ligne8)
         #print(data_speed)
-        hue = speedToHue( 0, speedMin=0 , speedMax=100, hueMin=140,hueMax=0)
-        print(hue)
-        print(colorKml(hue/360, 1, 1))
+        #hue = speedToHue( 0, speedMin=0 , speedMax=100, hueMin=140,hueMax=0)
+        #print(hue)
+        #print(colorKml(hue/360, 1, 1))
+        nombre_ligne7 = nbLinesFile(filename7)
+        data_speed = read_data_speed(filename7,nombre_ligne7)
+        print(data_speed)
+        min_speed, max_speed = min_max_speed(data_speed)
+        print(min_speed, max_speed)
     elif test == 1: #clasic code
         nombre_ligne2 = nbLinesFile(filename2)
         data_position = read_data_pos(filename2,nombre_ligne2)
@@ -202,10 +218,12 @@ if __name__ == '__main__':
         nombre_ligne7 = nbLinesFile(filename7)
         data_speed = read_data_speed(filename7,nombre_ligne7)
         print(data_speed)
-        N = 5
+        min_speed, max_speed = min_max_speed(data_speed)
+        print(min_speed, max_speed)
+        N = 15
         creation_fichier_2(filename9,filename10,filename11,data_position,data_speed,filename12,N)
         #creation_fichier(filename6,filename4,data,filename5)#creation of KML file for trajet
-    
+        print("Fichier uptade")
         
         
     
