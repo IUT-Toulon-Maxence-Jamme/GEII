@@ -10,6 +10,7 @@ class Window:
         self.borderwidth = 10
         self.dessin=Canvas(self.window,height=self.height+1,width=self.width+1,borderwidth = self.borderwidth,highlightthickness=0) #height & width +1 for extern border
         self.dessin.pack()
+        self.self_grid_list =[]
         return
 
     def define_grid(self, tile_height, tile_width):
@@ -45,8 +46,11 @@ class Window:
             print(f"Warning! There is not enough column({self.tile_width}), list({self.grid_width}) too short.")
         
         for i in range (self.grid_height):
+            l = []
             for j in range (self.grid_width):
                 self.carreau=self.dessin.create_rectangle(j*self.tile_size_width+self.borderwidth, i*self.tile_size_height+self.borderwidth, j*self.tile_size_width+self.tile_size_width+self.borderwidth, i*self.tile_size_height+self.tile_size_height+self.borderwidth,width=1,fill=self.color_array[self.grid_list[i][j]])
+                l.append(self.grid_list[i][j])
+            self.self_grid_list.append(l)
         self.dessin.update()
         return
     
@@ -54,7 +58,9 @@ class Window:
         self.grid_list = grid_list
         for i in range (self.tile_height):
             for j in range (self.tile_width):
-                self.carreau=self.dessin.create_rectangle(j*self.tile_size_width+self.borderwidth, i*self.tile_size_height+self.borderwidth, j*self.tile_size_width+self.tile_size_width+self.borderwidth, i*self.tile_size_height+self.tile_size_height+self.borderwidth,width=1,fill=self.color_array[self.grid_list[i][j]])
+                if self.self_grid_list[i][j]!=self.grid_list[i][j]:
+                    self.self_grid_list[i][j]=self.grid_list[i][j]
+                    self.carreau=self.dessin.create_rectangle(j*self.tile_size_width+self.borderwidth, i*self.tile_size_height+self.borderwidth, j*self.tile_size_width+self.tile_size_width+self.borderwidth, i*self.tile_size_height+self.tile_size_height+self.borderwidth,width=1,fill=self.color_array[self.grid_list[i][j]])
         self.dessin.update()
         return
 
